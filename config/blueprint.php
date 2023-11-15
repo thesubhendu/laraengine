@@ -1,5 +1,7 @@
 <?php
 
+use App\Blueprint\Generators\ViewGenerator;
+
 return [
 
     /*
@@ -41,6 +43,7 @@ return [
     |
     */
     'app_path' => 'app',
+    'base_path' => 'generated_code',
 
     /*
     |--------------------------------------------------------------------------
@@ -127,20 +130,21 @@ return [
     |
     */
     'generators' => [
-        'controller' => \Blueprint\Generators\ControllerGenerator::class,
-        'factory' => \Blueprint\Generators\FactoryGenerator::class,
-        'migration' => \Blueprint\Generators\MigrationGenerator::class,
-        'model' => \Blueprint\Generators\ModelGenerator::class,
-        'route' => \Blueprint\Generators\RouteGenerator::class,
-        'seeder' => \Blueprint\Generators\SeederGenerator::class,
-        'test' => \Blueprint\Generators\TestGenerator::class,
-        'event' => \Blueprint\Generators\Statements\EventGenerator::class,
-        'form_request' => \Blueprint\Generators\Statements\FormRequestGenerator::class,
-        'job' => \Blueprint\Generators\Statements\JobGenerator::class,
-        'mail' => \Blueprint\Generators\Statements\MailGenerator::class,
-        'notification' => \Blueprint\Generators\Statements\NotificationGenerator::class,
-        'resource' => \Blueprint\Generators\Statements\ResourceGenerator::class,
-        'view' => \Blueprint\Generators\Statements\ViewGenerator::class,
+        'controller' => \App\Blueprint\Generators\ControllerGenerator::class,
+        'factory' =>  \App\Blueprint\Generators\FactoryGenerator::class,
+        'migration' =>  \App\Blueprint\Generators\MigrationGenerator::class,
+        'model' => \App\Blueprint\Generators\ModelGenerator::class,
+        'route' => \App\Blueprint\Generators\RouteGenerator::class,
+        'seeder' => \App\Blueprint\Generators\SeederGenerator::class,
+        'test' => \App\Blueprint\Generators\TestGenerator::class,
+
+        'event' => \App\Blueprint\Generators\Statements\EventGenerator::class,
+        'form_request' => \App\Blueprint\Generators\Statements\FormRequestGenerator::class,
+        'job' => \App\Blueprint\Generators\Statements\JobGenerator::class,
+        'mail' => \App\Blueprint\Generators\Statements\MailGenerator::class,
+        'notification' => \App\Blueprint\Generators\Statements\NotificationGenerator::class,
+        'resource' => \App\Blueprint\Generators\Statements\ResourceGenerator::class,
+        'view' => \App\Blueprint\Generators\Statements\ViewGenerator::class,
     ],
 
 ];
