@@ -2,6 +2,7 @@
 
 namespace App\Blueprint\Generators\Statements;
 
+use Blueprint\Blueprint;
 use \Blueprint\Generators\Statements\ResourceGenerator as ParentResourceGenerator;
 
 class ResourceGenerator extends ParentResourceGenerator

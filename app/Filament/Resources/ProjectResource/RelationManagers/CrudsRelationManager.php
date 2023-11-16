@@ -4,7 +4,9 @@ namespace App\Filament\Resources\ProjectResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -32,9 +34,10 @@ class CrudsRelationManager extends RelationManager
                 Forms\Components\TextInput::make('name')
                     ->label('Model Name')
                     ->helperText('Must be singular, first letter uppercase and no special character')
-                ->required()
+                    ->required()
                     ->regex('/^[A-Z][a-zA-Z]*$/')
-                ->maxLength(15),
+                    ->maxLength(15)
+                    ,
 
                 //todo fix layouts
                 Repeater::make('relations')
@@ -44,14 +47,11 @@ class CrudsRelationManager extends RelationManager
                             ->options([
                                 'hasMany'=>'hasMany',
                                 'belongsToMany' => 'belongsToMany'
-                            ])
-                            ,
+                            ]),
                         Select::make('model')
                             ->options($this->getOwnerRecord()->cruds->pluck('name', 'name'))
-
                     ])
-                    ->addActionLabel('Add Relationship')
-                ,
+                    ->addActionLabel('Add Relationship'),
 
                 Repeater::make('blueprint')
                     ->label('Define Columns')
@@ -68,7 +68,18 @@ class CrudsRelationManager extends RelationManager
                         Checkbox::make('foreign'),
                         TextInput::make('default'),
                         //todo add index, length and other modifiers
-                    ])->columns(2)
+                    ])->columns(2),
+
+                Section::make('Controllers')
+                    ->statePath('controllers')
+                    ->schema([
+                        Radio::make('type')
+                            ->options([
+                                'all' => 'Web',
+                                'api' => 'api',
+                            ])
+                        ->helperText('Choose type of controller if you want to generate controller Or Leave empty')
+                    ])
             ]);
     }
 
@@ -108,4 +119,5 @@ class CrudsRelationManager extends RelationManager
                 ]),
             ]);
     }
+
 }

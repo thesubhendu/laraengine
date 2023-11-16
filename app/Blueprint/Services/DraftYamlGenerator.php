@@ -31,16 +31,12 @@ class DraftYamlGenerator
             $yamlArray['models'][$modelName] = $tableDefinition;
 
 //            todo handle controller logic
-//            if (!empty($crud->blueprint['controller']['name'])) {
-//
-//                $controllerType = 'web';
-//
-//                if (!empty($crud->blueprint['controller']['type'])) {
-//                    $controllerType = $crud->blueprint['controller']['type'];
-//                }
-//
-//                $yamlArray['controllers'][\Str::studly($crud->blueprint['controller']['name'])]['resource'] = $controllerType;
-//            }
+            if (!empty($crud->controllers) && !empty($crud->controllers['type'])) {
+                $controllerSettings = $crud->controllers;
+                $controllerType = $controllerSettings['type'];
+
+                $yamlArray['controllers'][\Str::studly($crud->name)]['resource'] = $controllerType;
+            }
         }
 
         $yamlContent = Yaml::dump($yamlArray, 999);

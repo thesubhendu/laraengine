@@ -20,6 +20,7 @@ class Crud extends Model
         'name',
         'blueprint',
         'relations',
+        'controllers',
         'project_id',
     ];
 
@@ -32,6 +33,7 @@ class Crud extends Model
         'id' => 'integer',
         'blueprint' => 'array',
         'relations' => 'array',
+        'controllers' => 'array',
         'project_id' => 'integer',
     ];
 
