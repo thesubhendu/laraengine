@@ -13,7 +13,7 @@ class CodeGenerator
     public $project;
     public $workingDirPath;
 
-    public function __construct()
+    public function __construct(Project $project)
     {
         $project = Project::first(); // todo remove this
         $this->project = $project;

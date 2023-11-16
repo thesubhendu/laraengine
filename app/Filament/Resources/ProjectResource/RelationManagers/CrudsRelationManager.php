@@ -3,6 +3,9 @@
 namespace App\Filament\Resources\ProjectResource\RelationManagers;
 
 use Filament\Forms;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
@@ -20,12 +23,24 @@ class CrudsRelationManager extends RelationManager
             ->schema([
                 Forms\Components\Select::make('project_id')
                 ->relationship('project', 'name')
-                ->required(),
+                ->required()
+                ->hidden()
+                ->default($this->getOwnerRecord()->id)
+                ,
                 Forms\Components\TextInput::make('name')
+                    ->label('Table Name')
                 ->required()
                 ->maxLength(255),
-                Forms\Components\TextInput::make('blueprint')
-                ->required(),
+                Repeater::make('blueprint')
+                    ->label('Define Columns')
+                    ->schema([
+                        TextInput::make('name')
+                            ->required(),
+                        TextInput::make('type')
+                            ->required(),
+                        Checkbox::make('nullable'),
+                        //todo add index, length and other modifiers
+                    ])->columns(2)
             ]);
     }
 
@@ -34,10 +49,11 @@ class CrudsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-            Tables\Columns\TextColumn::make('project.name')
-                ->numeric()
-                ->sortable(),
+//            Tables\Columns\TextColumn::make('project.name')
+//                ->numeric()
+//                ->sortable(),
             Tables\Columns\TextColumn::make('name')
+                ->label('Tables')
                 ->searchable(),
             Tables\Columns\TextColumn::make('created_at')
                 ->dateTime()

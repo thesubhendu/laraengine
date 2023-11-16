@@ -6,6 +6,9 @@ use App\Filament\Resources\CrudResource\Pages;
 use App\Filament\Resources\CrudResource\RelationManagers;
 use App\Models\Crud;
 use Filament\Forms;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -26,11 +29,18 @@ class CrudResource extends Resource
                 Forms\Components\Select::make('project_id')
                     ->relationship('project', 'name')
                     ->required(),
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('blueprint')
-                    ->required(),
+                Repeater::make('blueprint')
+                    ->schema([
+                        TextInput::make('name')
+                            ->required(),
+                        TextInput::make('type')
+                            ->required(),
+                        Checkbox::make('nullable'),
+                        //todo add index, length and other modifiers
+                    ])->columns(2)
             ]);
     }
 
