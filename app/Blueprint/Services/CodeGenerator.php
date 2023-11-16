@@ -2,53 +2,43 @@
 
 namespace App\Blueprint\Services;
 
-use Blueprint\Blueprint;
 use Blueprint\Builder;
-use Illuminate\Support\Facades\File;
 use App\Models\Project;
+use Blueprint\Blueprint;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Artisan;
 
 class CodeGenerator
 {
     public $project;
     public $workingDirPath;
-    public $zipName;
 
-    public function __construct(Project $project)
+    public function __construct()
     {
-        $projectName = \Str::snake($project->name);
-        $workingDir = 'generated_code/' . \Str::snake($project->user->name) . '/' . $projectName;
-        $workingDirPath = public_path($workingDir);
-
+        $project = Project::first(); // todo remove this
         $this->project = $project;
-        $this->workingDirPath = $workingDirPath;
-        $this->zipName = $workingDirPath . '/' . $projectName . '.zip';
 
-        config(['blueprint.base_path' => $workingDir]);
-        config(['blueprint.laravel_version' => $project->laravel_version]);
+        $this->workingDirPath = $project->generatedCodeDirectoryPath();
 
-        if ($project->laravel_version >= 8) {
-            config(['blueprint.models_namespace' => 'Models']);
-        }
+        config(['blueprint.base_path' => $project->generatedCodeDirectoryName()]);
     }
 
     public function generate()
     {
-        File::cleanDirectory($this->workingDirPath);
-        $laravelDefaultCode = __DIR__ . '/../../assets/laravel/' . $this->project->laravel_version;
-        File::copyDirectory($laravelDefaultCode, $this->workingDirPath);
+        $this->prepareDirectory();
+//        (new DraftYamlGenerator($this->project))->generate(); // todo uncomment once gui is ready
+        // $draftFile = $this->workingDirPath.'/draft.yaml';
+        $draftFile = base_path('draft-2.yaml');
 
-        $draftFile = $this->generateDraftContent($this->project);
+        Artisan::call('blueprint:build ' . $draftFile);
 
-        $blueprint = resolve(Blueprint::class);
-        resolve(Builder::class)->execute($blueprint, $draftFile);
-
-        return $this->zipAndDownload();
+        return $this->zipAndDownload($this->project->zipName());
     }
 
-    protected function zipAndDownload()
+    protected function zipAndDownload($zipName)
     {
         $zip = new \ZipArchive();
-        $zip->open($this->zipName, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+        $zip->open($zipName, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
 
         $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->workingDirPath));
         foreach ($files as $name => $file) {
@@ -64,110 +54,18 @@ class CodeGenerator
 
         $zip->close();
 
-        return response()->download($this->zipName);
+        return response()->download($zipName);
     }
 
-    private function generateDraftContent()
+    /**
+     * @return void
+     */
+    public function prepareDirectory(): void
     {
-        $yaml = app('syaml');
-
-        $cruds = $this->project->cruds;
-
-        $yamlArray = [];
-
-        foreach ($cruds as $crud) {
-            $modelName = \Str::studly(\Str::singular($crud->name));
-
-            $yamlArray['models'][$modelName] = $this->tableDefinition($crud);
-
-            if (!empty($crud->blueprint['controller']['name'])) {
-
-                $controllerType = 'web';
-
-                if (!empty($crud->blueprint['controller']['type'])) {
-                    $controllerType = $crud->blueprint['controller']['type'];
-                }
-
-                $yamlArray['controllers'][\Str::studly($crud->blueprint['controller']['name'])]['resource'] = $controllerType;
-            }
-        }
-
-        // dd('ymlarr',$yamlArray);
-        // dd($yamlArray['models']['Series']);
-        $yamlContent = $yaml->dump($yamlArray, 999);
-        // dd($yamlContent);
-        // $draftFile = base_path('draft.yaml');
-        $draftFile = $this->workingDirPath . '/draft.yaml';
-
-        file_put_contents($draftFile, $yamlContent, 999);
-
-        return $draftFile;
+        File::cleanDirectory($this->workingDirPath);
+        $laravelDefaultCode = public_path('laravelstub'); //todo load from config ideal
+        File::copyDirectory($laravelDefaultCode, $this->workingDirPath);
     }
 
-    protected function tableDefinition($crud): array
-    {
-        $blueprint = $crud->blueprint;
-        $columns = $blueprint['columns'];
-        $tableDefinition = [];
-
-        foreach ($columns as $index => $column) {
-            $tableDefinition[$column['name']] = $this->getColumnDefinition($column);
-        }
-
-        if ($crud->relations->isNotEmpty()) {
-            $tableDefinition['relationships'] = $this->relationships($crud->relations);
-        }
-
-        return $tableDefinition;
-    }
-
-    protected function relationships($relations): array
-    {
-        $availableRelations = ['hasOne', 'hasMany', 'belongsToMany'];
-        $relationsDefinitions = [];
-
-        $hasMany = [];
-        $hasOne = [];
-        $belongsToMany = [];
-
-        foreach ($relations as  $relation) {
-            $relationName = $relation->type;
-            $with = $relation->with;
-
-            if (in_array($relationName, $availableRelations)) {
-                $$relationName[] = $with;
-            }
-        }
-
-        foreach ($availableRelations as $rel) {
-            if (!empty($$rel)) {
-                $relationsDefinitions[$rel] = implode(', ', $$rel);
-            }
-        }
-
-        return $relationsDefinitions;
-    }
-
-
-
-    private function getColumnDefinition($column): string
-    {
-
-        $definition = $column['type'];
-
-        if (!empty($column['length'])) {
-            $definition .= ':' . $column['length'];
-        }
-
-        if (!empty($column['nullable']) && $column['nullable'] == 'nullable') {
-            $definition .= ' nullable';
-        }
-
-        if (!empty($column['unique']) && $column['unique'] == 'unique') {
-            $definition .= ' unique';
-        }
-
-        return $definition;
-    }
 
 }

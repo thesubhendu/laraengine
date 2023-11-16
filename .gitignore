@@ -19,3 +19,4 @@ yarn-error.log
 /.vscode
 /draft.yaml
 /.blueprint
+/public/laravelstub

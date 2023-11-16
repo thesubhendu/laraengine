@@ -41,4 +41,18 @@ class Project extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function generatedCodeDirectoryName(){
+        return 'generated_code/' . \Str::snake($this->user->name) . '/' . \Str::snake($this->name);
+    }
+
+    public function generatedCodeDirectoryPath(){
+        return public_path($this->generatedCodeDirectoryName());
+    }
+
+    public function zipName()
+    {
+        return $this->generatedCodeDirectoryPath().'/'.\Str::snake($this->name).'.zip';
+
+    }
 }
