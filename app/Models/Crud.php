@@ -19,6 +19,7 @@ class Crud extends Model
     protected $fillable = [
         'name',
         'blueprint',
+        'relations',
         'project_id',
     ];
 
@@ -30,13 +31,9 @@ class Crud extends Model
     protected $casts = [
         'id' => 'integer',
         'blueprint' => 'array',
+        'relations' => 'array',
         'project_id' => 'integer',
     ];
-
-    public function relations(): HasMany
-    {
-        return $this->hasMany(Relation::class);
-    }
 
     public function project(): BelongsTo
     {

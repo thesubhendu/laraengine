@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->json('blueprint');
+            $table->json('relations');
             $table->foreignId('project_id')->constrained();
             $table->timestamps();
         });

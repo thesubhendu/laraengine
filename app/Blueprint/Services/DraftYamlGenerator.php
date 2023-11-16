@@ -24,7 +24,11 @@ class DraftYamlGenerator
         foreach ($cruds as $crud) {
             $modelName = \Str::studly(\Str::singular($crud->name));
 
-            $yamlArray['models'][$modelName] = $this->tableDefinition($crud);
+            $tableDefinition = $this->tableDefinition($crud);
+            if(empty($tableDefinition)){
+                continue;
+            }
+            $yamlArray['models'][$modelName] = $tableDefinition;
 
 //            todo handle controller logic
 //            if (!empty($crud->blueprint['controller']['name'])) {
@@ -56,11 +60,12 @@ class DraftYamlGenerator
             $tableDefinition[$column['name']] = $this->getColumnDefinition($column);
         }
 
-//        todo add relations
-
-//        if ($crud->relations->isNotEmpty()) {
-//            $tableDefinition['relationships'] = $this->relationships($crud->relations);
-//        }
+        if ($crud->relations) {
+            $relationships = $this->relationships($crud->relations);
+            if(!empty($relationships)){
+                $tableDefinition['relationships'] = $relationships;
+            }
+        }
 
         return $tableDefinition;
     }
@@ -75,8 +80,11 @@ class DraftYamlGenerator
         $belongsToMany = [];
 
         foreach ($relations as  $relation) {
-            $relationName = $relation->type;
-            $with = $relation->with;
+            if(empty($relation['type']) || empty($relation['model'])){
+                continue;
+            }
+            $relationName = $relation['type'];
+            $with = $relation['model'];
 
             if (in_array($relationName, $availableRelations)) {
                 $$relationName[] = $with;

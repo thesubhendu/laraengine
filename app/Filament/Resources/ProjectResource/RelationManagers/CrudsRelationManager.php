@@ -28,11 +28,31 @@ class CrudsRelationManager extends RelationManager
                 ->hidden()
                 ->default($this->getOwnerRecord()->id)
                 ,
+
                 Forms\Components\TextInput::make('name')
                     ->label('Model Name')
-                    ->helperText('Must be singular')
+                    ->helperText('Must be singular, first letter uppercase and no special character')
                 ->required()
-                ->maxLength(255),
+                    ->regex('/^[A-Z][a-zA-Z]*$/')
+                ->maxLength(15),
+
+                //todo fix layouts
+                Repeater::make('relations')
+                    ->label('Relations')
+                    ->schema([
+                        Select::make('type')
+                            ->options([
+                                'hasMany'=>'hasMany',
+                                'belongsToMany' => 'belongsToMany'
+                            ])
+                            ,
+                        Select::make('model')
+                            ->options($this->getOwnerRecord()->cruds->pluck('name', 'name'))
+
+                    ])
+                    ->addActionLabel('Add Relationship')
+                ,
+
                 Repeater::make('blueprint')
                     ->label('Define Columns')
                     ->schema([
