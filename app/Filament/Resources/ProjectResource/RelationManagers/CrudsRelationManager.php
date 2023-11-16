@@ -5,6 +5,7 @@ namespace App\Filament\Resources\ProjectResource\RelationManagers;
 use Filament\Forms;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -28,7 +29,8 @@ class CrudsRelationManager extends RelationManager
                 ->default($this->getOwnerRecord()->id)
                 ,
                 Forms\Components\TextInput::make('name')
-                    ->label('Table Name')
+                    ->label('Model Name')
+                    ->helperText('Must be singular')
                 ->required()
                 ->maxLength(255),
                 Repeater::make('blueprint')
@@ -36,9 +38,15 @@ class CrudsRelationManager extends RelationManager
                     ->schema([
                         TextInput::make('name')
                             ->required(),
-                        TextInput::make('type')
+                        Select::make('type')
+                            ->options(config('blueprintgui.columnTypes'))
+                            ->searchable()
                             ->required(),
                         Checkbox::make('nullable'),
+                        Checkbox::make('unique'),
+                        Checkbox::make('index'),
+                        Checkbox::make('foreign'),
+                        TextInput::make('default'),
                         //todo add index, length and other modifiers
                     ])->columns(2)
             ]);

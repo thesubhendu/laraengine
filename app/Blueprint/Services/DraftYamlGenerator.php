@@ -2,6 +2,9 @@
 
 namespace App\Blueprint\Services;
 
+use App\Models\Crud;
+use Symfony\Component\Yaml\Yaml;
+
 use App\Models\Project;
 
 class DraftYamlGenerator
@@ -14,8 +17,6 @@ class DraftYamlGenerator
 
     public function generate()
     {
-        $yaml = app('syaml');
-
         $cruds = $this->project->cruds;
 
         $yamlArray = [];
@@ -25,38 +26,41 @@ class DraftYamlGenerator
 
             $yamlArray['models'][$modelName] = $this->tableDefinition($crud);
 
-            if (!empty($crud->blueprint['controller']['name'])) {
-
-                $controllerType = 'web';
-
-                if (!empty($crud->blueprint['controller']['type'])) {
-                    $controllerType = $crud->blueprint['controller']['type'];
-                }
-
-                $yamlArray['controllers'][\Str::studly($crud->blueprint['controller']['name'])]['resource'] = $controllerType;
-            }
+//            todo handle controller logic
+//            if (!empty($crud->blueprint['controller']['name'])) {
+//
+//                $controllerType = 'web';
+//
+//                if (!empty($crud->blueprint['controller']['type'])) {
+//                    $controllerType = $crud->blueprint['controller']['type'];
+//                }
+//
+//                $yamlArray['controllers'][\Str::studly($crud->blueprint['controller']['name'])]['resource'] = $controllerType;
+//            }
         }
 
-        $yamlContent = $yaml->dump($yamlArray, 999);
-        $draftFile = $this->workingDirPath . '/draft.yaml';
+        $yamlContent = Yaml::dump($yamlArray, 999);
+        $draftFile = $this->project->generatedCodeDirectoryPath() . '/draft.yaml';
         file_put_contents($draftFile, $yamlContent, 999);
 
         return $draftFile;
     }
 
-    protected function tableDefinition($crud): array
+    protected function tableDefinition(Crud $crud): array
     {
-        $blueprint = $crud->blueprint;
-        $columns = $blueprint['columns'];
+        $columns = $crud->blueprint;
+
         $tableDefinition = [];
 
         foreach ($columns as $index => $column) {
             $tableDefinition[$column['name']] = $this->getColumnDefinition($column);
         }
 
-        if ($crud->relations->isNotEmpty()) {
-            $tableDefinition['relationships'] = $this->relationships($crud->relations);
-        }
+//        todo add relations
+
+//        if ($crud->relations->isNotEmpty()) {
+//            $tableDefinition['relationships'] = $this->relationships($crud->relations);
+//        }
 
         return $tableDefinition;
     }
@@ -97,13 +101,25 @@ class DraftYamlGenerator
             $definition .= ':' . $column['length'];
         }
 
-        if (!empty($column['nullable']) && $column['nullable'] == 'nullable') {
+        //todo extend entering name of table eg uid: id foreign:users.id
+        if (!empty($column['foreign'])) {
+            $definition .= ' foreign';
+        }
+
+        if (!empty($column['nullable'])) {
             $definition .= ' nullable';
         }
 
-        if (!empty($column['unique']) && $column['unique'] == 'unique') {
+        if (!empty($column['unique'])) {
             $definition .= ' unique';
         }
+
+        if (!empty($column['index'])) {
+            $definition .= ' index';
+        }
+
+//        dd($definition);
+
 
         return $definition;
     }

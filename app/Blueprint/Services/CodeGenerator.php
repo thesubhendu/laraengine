@@ -15,7 +15,6 @@ class CodeGenerator
 
     public function __construct(Project $project)
     {
-        $project = Project::first(); // todo remove this
         $this->project = $project;
 
         $this->workingDirPath = $project->generatedCodeDirectoryPath();
@@ -26,9 +25,8 @@ class CodeGenerator
     public function generate()
     {
         $this->prepareDirectory();
-//        (new DraftYamlGenerator($this->project))->generate(); // todo uncomment once gui is ready
-        // $draftFile = $this->workingDirPath.'/draft.yaml';
-        $draftFile = base_path('draft-2.yaml');
+       (new DraftYamlGenerator($this->project))->generate();
+        $draftFile = $this->workingDirPath.'/draft.yaml';
 
         Artisan::call('blueprint:build ' . $draftFile);
 
@@ -62,6 +60,8 @@ class CodeGenerator
      */
     public function prepareDirectory(): void
     {
+        //remove .blueprint file
+//        File::delete(public_path('..blueprint'));
         File::cleanDirectory($this->workingDirPath);
         $laravelDefaultCode = public_path('laravelstub'); //todo load from config ideal
         File::copyDirectory($laravelDefaultCode, $this->workingDirPath);
