@@ -4,6 +4,7 @@ namespace App\Filament\Resources\ProjectResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class CrudsRelationManager extends RelationManager
 {
     protected static string $relationship = 'cruds';
+    protected static ?string $title = 'Model';
 
     public function form(Form $form): Form
     {
@@ -31,8 +33,9 @@ class CrudsRelationManager extends RelationManager
                         $this->modelNameField(),
                         $this->relationsBuilderRepeater(),
                     ]),
+
                 Section::make('Define Table')
-                    ->columns(2)
+                    ->columns(1)
                     ->schema([
                         $this->tableColumnsBuilder(),
                     ]),
@@ -42,7 +45,7 @@ class CrudsRelationManager extends RelationManager
                         $this->controllerField(),
                     ])
 
-            ]);
+            ])->columns(1);
     }
 
     public function table(Table $table): Table
@@ -69,7 +72,7 @@ class CrudsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()->label('New Model'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -87,19 +90,24 @@ class CrudsRelationManager extends RelationManager
         return  Repeater::make('blueprint')
             ->label('Define Columns')
             ->schema([
-                TextInput::make('name')
-                    ->required(),
-                Select::make('type')
-                    ->options(config('blueprintgui.columnTypes'))
-                    ->searchable()
-                    ->required(),
-                Checkbox::make('nullable'),
-                Checkbox::make('unique'),
-                Checkbox::make('index'),
-                Checkbox::make('foreign'),
-                TextInput::make('default'),
+                Grid::make(3)->schema([
+                    TextInput::make('name')
+                        ->required(),
+                    Select::make('type')
+                        ->options(config('blueprintgui.columnTypes'))
+                        ->searchable()
+                        ->required(),
+                    TextInput::make('default'),
+                ]),
+                Grid::make(4)->schema([
+                    Checkbox::make('nullable'),
+                    Checkbox::make('unique'),
+                    Checkbox::make('index'),
+                    Checkbox::make('foreign'),
+                ]),
                 //todo add index, length and other modifiers
-            ])->addActionLabel('Add Column');;
+            ])
+            ->addActionLabel('Add Column');
     }
 
     /**

@@ -15,12 +15,14 @@ return new class extends Migration
 
         Schema::create('cruds', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
+            $table->string('name');
             $table->json('blueprint');
             $table->json('relations')->nullable();
             $table->json('controllers')->nullable();
             $table->foreignId('project_id')->constrained();
             $table->timestamps();
+
+            $table->unique(['name','project_id']);
         });
 
         Schema::enableForeignKeyConstraints();
