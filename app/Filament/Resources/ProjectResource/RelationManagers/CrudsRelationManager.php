@@ -30,6 +30,10 @@ class CrudsRelationManager extends RelationManager
                         $this->projectField(),
                         $this->modelNameField(),
                         $this->relationsBuilderRepeater(),
+                    ]),
+                Section::make('Define Table')
+                    ->columns(2)
+                    ->schema([
                         $this->tableColumnsBuilder(),
                     ]),
                 Section::make('Controller')
