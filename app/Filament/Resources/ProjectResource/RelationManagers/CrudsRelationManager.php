@@ -107,6 +107,7 @@ class CrudsRelationManager extends RelationManager
             ->label('Model Name')
             ->helperText('Must be singular, first letter uppercase and no special character')
             ->required()
+            ->unique()
             ->regex('/^[A-Z][a-zA-Z]*$/')
             ->maxLength(15);
     }
