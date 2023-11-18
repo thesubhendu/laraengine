@@ -24,62 +24,20 @@ class CrudsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('project_id')
-                ->relationship('project', 'name')
-                ->required()
-                ->hidden()
-                ->default($this->getOwnerRecord()->id)
-                ,
-
-                Forms\Components\TextInput::make('name')
-                    ->label('Model Name')
-                    ->helperText('Must be singular, first letter uppercase and no special character')
-                    ->required()
-                    ->regex('/^[A-Z][a-zA-Z]*$/')
-                    ->maxLength(15)
-                    ,
-
-                //todo fix layouts
-                Repeater::make('relations')
-                    ->label('Relations')
+                Section::make('Model')
+                    ->columns(2)
                     ->schema([
-                        Select::make('type')
-                            ->options([
-                                'hasMany'=>'hasMany',
-                                'belongsToMany' => 'belongsToMany'
-                            ]),
-                        Select::make('model')
-                            ->options($this->getOwnerRecord()->cruds->pluck('name', 'name'))
-                    ])
-                    ->addActionLabel('Add Relationship'),
-
-                Repeater::make('blueprint')
-                    ->label('Define Columns')
-                    ->schema([
-                        TextInput::make('name')
-                            ->required(),
-                        Select::make('type')
-                            ->options(config('blueprintgui.columnTypes'))
-                            ->searchable()
-                            ->required(),
-                        Checkbox::make('nullable'),
-                        Checkbox::make('unique'),
-                        Checkbox::make('index'),
-                        Checkbox::make('foreign'),
-                        TextInput::make('default'),
-                        //todo add index, length and other modifiers
-                    ])->columns(2),
-
-                Section::make('Controllers')
+                        $this->projectField(),
+                        $this->modelNameField(),
+                        $this->relationsBuilderRepeater(),
+                        $this->tableColumnsBuilder(),
+                    ]),
+                Section::make('Controller')
                     ->statePath('controllers')
                     ->schema([
-                        Radio::make('type')
-                            ->options([
-                                'all' => 'Web',
-                                'api' => 'api',
-                            ])
-                        ->helperText('Choose type of controller if you want to generate controller Or Leave empty')
+                        $this->controllerField(),
                     ])
+
             ]);
     }
 
@@ -118,6 +76,83 @@ class CrudsRelationManager extends RelationManager
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    private function tableColumnsBuilder(): Forms\Components\Field
+    {
+        return  Repeater::make('blueprint')
+            ->label('Define Columns')
+            ->schema([
+                TextInput::make('name')
+                    ->required(),
+                Select::make('type')
+                    ->options(config('blueprintgui.columnTypes'))
+                    ->searchable()
+                    ->required(),
+                Checkbox::make('nullable'),
+                Checkbox::make('unique'),
+                Checkbox::make('index'),
+                Checkbox::make('foreign'),
+                TextInput::make('default'),
+                //todo add index, length and other modifiers
+            ])->addActionLabel('Add Column');;
+    }
+
+    /**
+     * @return TextInput
+     */
+    private function modelNameField(): TextInput
+    {
+        return Forms\Components\TextInput::make('name')
+            ->label('Model Name')
+            ->helperText('Must be singular, first letter uppercase and no special character')
+            ->required()
+            ->regex('/^[A-Z][a-zA-Z]*$/')
+            ->maxLength(15);
+    }
+
+    /**
+     * @return Select
+     */
+    private function projectField(): Select
+    {
+        return Forms\Components\Select::make('project_id')
+            ->relationship('project', 'name')
+            ->required()
+            ->hidden()
+            ->default($this->getOwnerRecord()->id);
+    }
+
+    /**
+     * @return Radio
+     */
+    private function controllerField(): Radio
+    {
+        return Radio::make('type')
+            ->options([
+                'all' => 'Web',
+                'api' => 'api',
+            ])
+            ->helperText('Choose type of controller if you want to generate controller Or Leave empty');
+    }
+
+    /**
+     * @return Repeater
+     */
+    public function relationsBuilderRepeater(): Repeater
+    {
+        return Repeater::make('relations')
+            ->label('Relations')
+            ->schema([
+                Select::make('type')
+                    ->options([
+                        'hasMany' => 'hasMany',
+                        'belongsToMany' => 'belongsToMany'
+                    ]),
+                Select::make('model')
+                    ->options($this->getOwnerRecord()->cruds->pluck('name', 'name'))
+            ])
+            ->addActionLabel('Add Relationship');
     }
 
 }
