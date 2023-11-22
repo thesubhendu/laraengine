@@ -39,6 +39,9 @@ class DraftYamlGenerator
             }
         }
 
+        $modelNames = $cruds->pluck('name');
+        $yamlArray['seeders'] = implode(',', $modelNames->toArray());
+
         $yamlContent = Yaml::dump($yamlArray, 999);
         $draftFile = $this->project->generatedCodeDirectoryPath() . '/draft.yaml';
         file_put_contents($draftFile, $yamlContent, 999);

@@ -16,6 +16,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Validation\Rules\Unique;
 
 class CrudsRelationManager extends RelationManager
 {
@@ -119,7 +120,9 @@ class CrudsRelationManager extends RelationManager
             ->label('Model Name')
             ->helperText('Must be singular, first letter uppercase and no special character')
             ->required()
-            ->unique()
+            ->unique(ignoreRecord: true, modifyRuleUsing: function (Unique $rule){
+                $rule->where('project_id', $this->getOwnerRecord()->id);
+            })
             ->regex('/^[A-Z][a-zA-Z]*$/')
             ->maxLength(15);
     }
@@ -156,6 +159,7 @@ class CrudsRelationManager extends RelationManager
     {
         return Repeater::make('relations')
             ->label('Relations')
+            ->helperText('BelongsTo relationship will be automatically added if you define foreign key with column type id')
             ->schema([
                 Select::make('type')
                     ->options([
