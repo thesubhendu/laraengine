@@ -17,8 +17,10 @@ class CodeGenerator
     {
         $this->project = $project;
 
-        $this->workingDirPath = $project->generatedCodeDirectoryPath();
 
+        config()->set('blueprint.project_folder', 'somefolder');
+
+        $this->workingDirPath = $project->generatedCodeDirectoryPath();
         config(['blueprint.base_path' => $project->generatedCodeDirectoryName()]);
     }
 
@@ -29,8 +31,6 @@ class CodeGenerator
         $draftFile = $this->workingDirPath.'/draft.yaml';
         //take draft file from project dir
 
-        //remove custom generator
-        config()->set('blueprint.project_folder', 'anothercodecontainer');
 
         Artisan::call('blueprint:build ' . $draftFile);
 
