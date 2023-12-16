@@ -19,3 +19,5 @@ yarn-error.log
 /.vscode
 /draft.yaml
 /.blueprint
+/dist
+.DS_Store
