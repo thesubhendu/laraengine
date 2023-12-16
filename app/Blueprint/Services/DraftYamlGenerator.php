@@ -43,7 +43,7 @@ class DraftYamlGenerator
         $yamlArray['seeders'] = implode(',', $modelNames->toArray());
 
         $yamlContent = Yaml::dump($yamlArray, 999);
-        $draftFile = $this->project->generatedCodeDirectoryPath() . '/draft.yaml';
+        $draftFile = $this->project->path . '/draft.yaml';
         file_put_contents($draftFile, $yamlContent, 999);
 
         return $draftFile;
