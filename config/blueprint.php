@@ -44,6 +44,7 @@ return [
     */
     'app_path' => 'app',
     'base_path' => 'generated_code',
+    'project_folder' => 'generated_code',
 
     /*
     |--------------------------------------------------------------------------

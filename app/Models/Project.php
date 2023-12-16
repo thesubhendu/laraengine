@@ -43,7 +43,7 @@ class Project extends Model
     }
 
     public function generatedCodeDirectoryName(){
-        return 'generated_code/' . \Str::snake($this->user->name) . '/' . \Str::snake($this->name);
+        return config('blueprint.project_folder').'/' . \Str::snake($this->user->name) . '/' . \Str::snake($this->name);
     }
 
     public function generatedCodeDirectoryPath(){

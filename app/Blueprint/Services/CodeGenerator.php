@@ -24,13 +24,13 @@ class CodeGenerator
 
     public function generate()
     {
-        config()->set('blueprint.base_path', 'anothercodecontainer');
         $this->prepareDirectory();
        (new DraftYamlGenerator($this->project))->generate();
         $draftFile = $this->workingDirPath.'/draft.yaml';
         //take draft file from project dir
 
         //remove custom generator
+        config()->set('blueprint.project_folder', 'anothercodecontainer');
 
         Artisan::call('blueprint:build ' . $draftFile);
 
