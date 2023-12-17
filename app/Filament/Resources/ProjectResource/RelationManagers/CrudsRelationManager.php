@@ -106,7 +106,7 @@ class CrudsRelationManager extends RelationManager
                     Checkbox::make('index'),
                     Checkbox::make('foreign'),
                 ]),
-                //todo add index, length and other modifiers
+
             ])
             ->addActionLabel('Add Column');
     }

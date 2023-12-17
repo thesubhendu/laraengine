@@ -37,7 +37,7 @@ class NativeAppServiceProvider implements ProvidesPhpIni
             ->register();
 
         Window::open()
-            ->route('filament.admin.pages.dashboard')
+            ->route('projects')
             ->width(900)
             ->height(800)
             ->showDevTools(false)
