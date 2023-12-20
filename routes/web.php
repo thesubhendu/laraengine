@@ -18,3 +18,4 @@ Route::get('/', function () {
 });
 
 Route::get('/projects', \App\Livewire\LaravelProjects::class)->name('projects');
+Route::get('/project/{project}', \App\Livewire\ProjectSingle::class)->name('project.show');
