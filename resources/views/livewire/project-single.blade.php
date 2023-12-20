@@ -7,15 +7,26 @@
     <div class="my-4">
         <h3 class="text-2xl"> Project Name:  {{$project->name}}</h3>
     </div>
-    <form wire:submit="create">
-        {{ $this->form }}
+    <a
+        class="mb-3 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-3 rounded-full"
+        href="{{route('projects.crud', $project->id)}}"
+    >Add Crud</a>
+    <button
+        class="mb-3 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-3 rounded-full"
+        wire:click="generateCode"
+    >Generate Code</button>
 
-        <button
-            class="m-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-            type="submit">
-            Save
-        </button>
-    </form>
+    <ul class="m-3">
+        @foreach($cruds as $crud)
+            <li>
+                 {{$crud->name}}
+
+                <a href="{{route('projects.crud',[$project->id, $crud->id])}}"
+                >Edit</a>
+            </li>
+        @endforeach
+
+    </ul>
 
     <x-filament-actions::modals />
 </div>

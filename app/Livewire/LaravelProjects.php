@@ -43,14 +43,14 @@ class LaravelProjects extends Component implements HasForms, HasActions
                 $project->name = $path;
                 $project->save();
             }
-            return $this->redirectRoute('project.show', $project->id);
+            return $this->redirectRoute('projects.show', $project->id);
         }
     }
 
     public function visitProject($projectId)
     {
 //        return $this->redirect()->route
-        return $this->redirectRoute('project.show', ['project' => $projectId]);
+        return $this->redirectRoute('projects.show', ['project' => $projectId]);
     }
 
     public function form(Form $form): Form

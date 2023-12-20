@@ -21,11 +21,11 @@ class CodeGenerator
     public function generate()
     {
         //todo auto detect blueprint installed
-        if(!$this->project->blueprint_installed_at){
+//        if(!$this->project->blueprint_installed_at){
             Process::path($this->project->path)->run('composer require --dev laravel-shift/blueprint');
-            $this->project->blueprint_installed_at = now();
-            $this->project->save();
-        }
+//            $this->project->blueprint_installed_at = now();
+//            $this->project->save();
+//        }
 
        (new DraftYamlGenerator($this->project))->generate();
         Process::path($this->project->path)->run('php artisan blueprint:build -m'); //-m overwrite migrations

@@ -17,5 +17,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/projects', \App\Livewire\LaravelProjects::class)->name('projects');
-Route::get('/project/{project}', \App\Livewire\ProjectSingle::class)->name('project.show');
+Route::get('/projects', \App\Livewire\LaravelProjects::class)->name('projects.index');
+Route::get('/project/{project}', \App\Livewire\ProjectSingle::class)->name('projects.show');
+
+Route::get('/project/{project}/crud/{crud?}', \App\Livewire\Crud::class)->name('projects.crud');

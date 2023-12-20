@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->string('path');
             $table->text('description')->nullable();
+            $table->dateTime('blueprint_installed_at')->nullable();
             $table->timestamps();
         });
 
