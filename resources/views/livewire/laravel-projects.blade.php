@@ -23,8 +23,13 @@
                 {{$project->name}} , Path - {{$project->path}}
 
                 <button
-                    class="mb-3 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-3 rounded-full"
+                    class="mb-3 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-3 rounded-full"
                     wire:click="visitProject({{$project->id}})">Go to project</button>
+
+                <button
+                    class="mb-3 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-3 rounded-full"
+                    wire:confirm="Are you sure you want to delete this?"
+                    wire:click="deleteProject({{$project->id}})">Delete</button>
             </li>
         @endforeach
     </ul>

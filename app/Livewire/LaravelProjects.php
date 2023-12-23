@@ -53,6 +53,16 @@ class LaravelProjects extends Component implements HasForms, HasActions
         return $this->redirectRoute('projects.show', ['project' => $projectId]);
     }
 
+    public function deleteProject($projectId)
+    {
+        $project = Project::find($projectId);
+        $project->cruds()->delete();
+        Project::destroy($projectId);
+//        return $this->redirect()->route
+        session()->flash('status', 'Project Deleted');
+        return $this->redirectRoute('projects.index');
+    }
+
     public function form(Form $form): Form
     {
         return $form

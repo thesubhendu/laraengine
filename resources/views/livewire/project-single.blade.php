@@ -8,20 +8,22 @@
         <h3 class="text-2xl"> Project Name:  {{$project->name}}</h3>
     </div>
     <a
-        class="mb-3 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-3 rounded-full"
+        class="mb-3 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-3 rounded"
         href="{{route('projects.crud', $project->id)}}"
     >Add Crud</a>
     <button
-        class="mb-3 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-3 rounded-full"
+        class="mb-3 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-3 rounded"
         wire:click="generateCode"
     >Generate Code</button>
 
     <ul class="m-3">
         @foreach($cruds as $crud)
-            <li>
+            <li class="my-3">
+                <span class="font-bold">
                  {{$crud->name}}
+                </span>
 
-                <a href="{{route('projects.crud',[$project->id, $crud->id])}}"
+                <a class="text-white  my-3 bg-sky-500 hover:bg-sky-800 p-2" href="{{route('projects.crud',[$project->id, $crud->id])}}"
                 >Edit</a>
             </li>
         @endforeach

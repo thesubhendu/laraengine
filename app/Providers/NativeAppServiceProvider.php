@@ -37,7 +37,7 @@ class NativeAppServiceProvider implements ProvidesPhpIni
             ->register();
 
         Window::open()
-            ->route('projects')
+            ->route('projects.index')
             ->width(900)
             ->height(800)
             ->showDevTools(false)
