@@ -149,7 +149,7 @@ class Crud extends Component implements HasForms, HasActions
     {
         return Radio::make('type')
             ->options([
-                'all' => 'Web',
+                'web' => 'Web',
                 'api' => 'api',
             ])
             ->helperText('Choose type of controller if you want to generate controller Or Leave empty');
