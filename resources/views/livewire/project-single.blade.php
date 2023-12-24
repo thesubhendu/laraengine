@@ -15,6 +15,11 @@
         class="mb-3 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-3 rounded"
         wire:click="generateCode"
     >Generate Code</button>
+    <div class="my-3 text-red-700"
+         wire:loading
+    >
+        Generating Code Please Wait...
+    </div>
 
     <ul class="m-3">
         @foreach($cruds as $crud)
