@@ -43,16 +43,19 @@ class Project extends Model
     }
 
     public function generatedCodeDirectoryName(){
-        return 'generated_code/' . \Str::snake($this->user->name) . '/' . \Str::snake($this->name);
+//        return config('blueprint.project_folder').'/' . \Str::snake($this->user->name) . '/' . \Str::snake($this->name);
+        return config('blueprint.project_folder'); // it will be replaced by actual project folder path during runtime
     }
 
     public function generatedCodeDirectoryPath(){
-        return public_path($this->generatedCodeDirectoryName());
+//        return public_path($this->generatedCodeDirectoryName());
+        return $this->generatedCodeDirectoryName(); //same as name
     }
 
     public function zipName()
     {
-        return $this->generatedCodeDirectoryPath().'/'.\Str::snake($this->name).'.zip';
+//        return $this->generatedCodeDirectoryPath().'/'.\Str::snake($this->name).'.zip';
+        return \Str::snake($this->name).'.zip';
 
     }
 }

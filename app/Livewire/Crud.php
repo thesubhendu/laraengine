@@ -1,27 +1,65 @@
 <?php
 
-namespace App\Filament\Resources\ProjectResource\RelationManagers;
+namespace App\Livewire;
 
-use Filament\Forms;
+use App\Models\Project;
+use Filament\Actions\Action;
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
-use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Validation\Rules\Unique;
+use Livewire\Component;
+use Native\Laravel\Dialog;
+use App\Models\Crud as CrudModel;
 
-class CrudsRelationManager extends RelationManager
+class Crud extends Component implements HasForms, HasActions
 {
-    protected static string $relationship = 'cruds';
-    protected static ?string $title = 'Model';
+    use InteractsWithForms;
+    use InteractsWithActions;
+
+    public ?array $data = [];
+
+    public  $project;
+    public  $crud;
+
+    public function mount($project, $crud=null)
+    {
+        $this->project = Project::find($project);
+
+        if($crud){
+            $this->crud = CrudModel::find($crud);
+            $this->form->fill($this->crud->toArray());
+        }else{
+            $this->form->fill();
+        }
+    }
+
+    public function create(): void
+    {
+        if($this->crud){
+            $this->crud->update($this->form->getState());
+        }else{
+            $this->project->cruds()->create($this->form->getState());
+        }
+        session()->flash('status', 'Post successfully updated.');
+
+        $this->redirectRoute('projects.show', $this->project->id);
+    }
+
+    public function goBack()
+    {
+        return $this->redirectRoute('projects.show', $this->project->id);
+    }
 
     public function form(Form $form): Form
     {
@@ -46,47 +84,12 @@ class CrudsRelationManager extends RelationManager
                         $this->controllerField(),
                     ])
 
-            ])->columns(1);
+            ])->columns(1)
+            ->statePath('data');
     }
 
-    public function table(Table $table): Table
-    {
-        return $table
-            ->recordTitleAttribute('name')
-            ->columns([
-//            Tables\Columns\TextColumn::make('project.name')
-//                ->numeric()
-//                ->sortable(),
-            Tables\Columns\TextColumn::make('name')
-                ->label('Tables')
-                ->searchable(),
-            Tables\Columns\TextColumn::make('created_at')
-                ->dateTime()
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
-            Tables\Columns\TextColumn::make('updated_at')
-                ->dateTime()
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
-        ])
-            ->filters([
-                //
-            ])
-            ->headerActions([
-                Tables\Actions\CreateAction::make()->label('New Model'),
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
-    }
 
-    private function tableColumnsBuilder(): Forms\Components\Field
+    private function tableColumnsBuilder()
     {
         return  Repeater::make('blueprint')
             ->label('Define Columns')
@@ -116,12 +119,12 @@ class CrudsRelationManager extends RelationManager
      */
     private function modelNameField(): TextInput
     {
-        return Forms\Components\TextInput::make('name')
+        return TextInput::make('name')
             ->label('Model Name')
             ->helperText('Must be singular, first letter uppercase and no special character')
             ->required()
             ->unique(ignoreRecord: true, modifyRuleUsing: function (Unique $rule){
-                $rule->where('project_id', $this->getOwnerRecord()->id);
+                $rule->where('project_id', $this->project->id);
             })
             ->regex('/^[A-Z][a-zA-Z]*$/')
             ->maxLength(15);
@@ -132,11 +135,11 @@ class CrudsRelationManager extends RelationManager
      */
     private function projectField(): Select
     {
-        return Forms\Components\Select::make('project_id')
+        return Select::make('project_id')
             ->relationship('project', 'name')
             ->required()
             ->hidden()
-            ->default($this->getOwnerRecord()->id);
+            ->default($this->project->id);
     }
 
     /**
@@ -146,7 +149,7 @@ class CrudsRelationManager extends RelationManager
     {
         return Radio::make('type')
             ->options([
-                'all' => 'Web',
+                'web' => 'Web',
                 'api' => 'api',
             ])
             ->helperText('Choose type of controller if you want to generate controller Or Leave empty');
@@ -167,9 +170,14 @@ class CrudsRelationManager extends RelationManager
                         'belongsToMany' => 'belongsToMany'
                     ]),
                 Select::make('model')
-                    ->options($this->getOwnerRecord()->cruds->pluck('name', 'name'))
+                    ->options($this->project->cruds->pluck('name', 'name'))
             ])
             ->addActionLabel('Add Relationship');
     }
 
+
+    public function render()
+    {
+        return view('livewire.crud');
+    }
 }

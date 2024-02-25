@@ -15,9 +15,10 @@ return new class extends Migration
 
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->nullable();
+            $table->string('path');
             $table->text('description')->nullable();
-            $table->foreignId('user_id')->constrained();
+            $table->dateTime('blueprint_installed_at')->nullable();
             $table->timestamps();
         });
 
